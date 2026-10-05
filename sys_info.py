@@ -1,5 +1,7 @@
 import platform
 import socket
+import os
+import psutil
 
 
 def get_sys_info():
@@ -12,12 +14,27 @@ def get_sys_info():
         "os": opsys,
         "architecture": architecture,
         "processor": processor,
-        "hostname" : hostname
+        "hostname": hostname
     }
 
     return sys_info
 
+
+def get_cpu_info():
+    cpu_count = os.cpu_count()
+    cpu_usage = psutil.cpu_percent(interval=1)
+
+    cpu_info = {
+        "CPU count": cpu_count,
+        "CPU usage": cpu_usage
+    }
+
+    return cpu_info
+
+
 sys_info = get_sys_info()
+cpu_info = get_cpu_info()
+
 
 print("SYSTEM INFORMATION")
 print("------------------")
@@ -26,4 +43,8 @@ print(f"Architecture : {sys_info['architecture']}")
 print(f"Processor    : {sys_info['processor']}")
 print(f"Hostname     : {sys_info['hostname']}")
 
-
+print()
+print("CPU INFORMATION")
+print("----------------")
+print(f"CPU Count    : {cpu_info['CPU count']}")
+print(f"CPU Usage    : {cpu_info['CPU usage']}%")
