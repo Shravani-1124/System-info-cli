@@ -50,9 +50,27 @@ def get_memory_info():
 def bytes_to_gb(bytes_value):
     return bytes_value / (1024 ** 3)
 
+def get_disk_info():
+    disk = psutil.disk_usage("/")
+
+    total = disk.total
+    used = disk.used
+    free = disk.free
+    percentage = disk.percent
+
+    disk_info = {
+        "total": total,
+        "used": used,
+        "free": free,
+        "percentage": percentage
+    }
+
+    return disk_info
+
 sys_info = get_sys_info()
 cpu_info = get_cpu_info()
 memory_info = get_memory_info()
+disk_info = get_disk_info()
 
 
 print("SYSTEM INFORMATION")
@@ -75,3 +93,11 @@ print(f"Total     : {bytes_to_gb(memory_info['total']):.2f} GB")
 print(f"Used      : {bytes_to_gb(memory_info['used']):.2f} GB")
 print(f"Available : {bytes_to_gb(memory_info['available']):.2f} GB")
 print(f"Usage     : {memory_info['percentage']}%")
+
+print()
+print("DISK INFORMATION")
+print("-----------------")
+print(f"Total     : {bytes_to_gb(disk_info['total']):.2f} GB")
+print(f"Used      : {bytes_to_gb(disk_info['used']):.2f} GB")
+print(f"Free      : {bytes_to_gb(disk_info['free']):.2f} GB")
+print(f"Usage     : {disk_info['percentage']}%")
