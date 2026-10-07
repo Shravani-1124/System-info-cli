@@ -67,10 +67,22 @@ def get_disk_info():
 
     return disk_info
 
+def get_network_info():
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+
+    network_info = {
+        "hostname": hostname,
+        "local_ip": local_ip
+    }
+
+    return network_info
+
 sys_info = get_sys_info()
 cpu_info = get_cpu_info()
 memory_info = get_memory_info()
 disk_info = get_disk_info()
+network_info = get_network_info()
 
 
 print("SYSTEM INFORMATION")
@@ -101,3 +113,9 @@ print(f"Total     : {bytes_to_gb(disk_info['total']):.2f} GB")
 print(f"Used      : {bytes_to_gb(disk_info['used']):.2f} GB")
 print(f"Free      : {bytes_to_gb(disk_info['free']):.2f} GB")
 print(f"Usage     : {disk_info['percentage']}%")
+
+print()
+print("NETWORK INFORMATION")
+print("-------------------")
+print(f"Hostname : {network_info['hostname']}")
+print(f"Local IP : {network_info['local_ip']}")
