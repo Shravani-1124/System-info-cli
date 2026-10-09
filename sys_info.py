@@ -5,6 +5,7 @@ import os
 import psutil
 import time
 import argparse
+import json
 
 
 # ---------------- SYSTEM INFORMATION ----------------
@@ -180,7 +181,17 @@ def display_full_report():
     display_uptime()
 
 
-# ---------------- COMMAND-LINE INTERFACE ----------------
+def collect_all_info():
+    return {
+        "system": get_sys_info(),
+        "cpu": get_cpu_info(),
+        "memory": get_memory_info(),
+        "disk": get_disk_info(),
+        "network": get_network_info(),
+        "uptime": format_uptime(get_uptime())
+    }
+
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -211,29 +222,52 @@ def main():
         help="Display network information"
     )
 
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Display information in JSON format"
+    )
+
     args = parser.parse_args()
 
-    # Display every selected section.
-    selected = False
+    # Collect only the requested sections.
+    sections = {}
 
     if args.cpu:
-        display_cpu_info(get_cpu_info())
-        selected = True
+        sections["cpu"] = get_cpu_info()
 
     if args.memory:
-        display_memory_info(get_memory_info())
-        selected = True
+        sections["memory"] = get_memory_info()
 
     if args.disk:
-        display_disk_info(get_disk_info())
-        selected = True
+        sections["disk"] = get_disk_info()
 
     if args.network:
-        display_network_info(get_network_info())
-        selected = True
+        sections["network"] = get_network_info()
 
-    # If no section was selected, display everything.
-    if not selected:
+    # If no section is selected, collect the full report.
+    if not sections:
+        sections = collect_all_info()
+
+    # JSON output
+    if args.json:
+        print(json.dumps(sections, indent=4))
+        return
+
+    # Normal, human-readable output
+    if args.cpu:
+        display_cpu_info(sections["cpu"])
+
+    if args.memory:
+        display_memory_info(sections["memory"])
+
+    if args.disk:
+        display_disk_info(sections["disk"])
+
+    if args.network:
+        display_network_info(sections["network"])
+
+    if not (args.cpu or args.memory or args.disk or args.network):
         display_full_report()
 
 
