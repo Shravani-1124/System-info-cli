@@ -227,7 +227,17 @@ def main():
         action="store_true",
         help="Display information in JSON format"
     )
+    parser.add_argument(
+        "--system",
+        action="store_true",
+        help="Display system information"
+    )
 
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="sysinfo 1.0.0"
+    )
     args = parser.parse_args()
 
     # Collect only the requested sections.
@@ -270,6 +280,8 @@ def main():
     if not (args.cpu or args.memory or args.disk or args.network):
         display_full_report()
 
+    if args.system:
+        display_sys_info(get_sys_info())
 
 if __name__ == "__main__":
     main()
