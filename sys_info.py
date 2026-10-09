@@ -2,7 +2,7 @@ import platform
 import socket
 import os
 import psutil
-
+import time
 
 def get_sys_info():
     opsys = platform.system()
@@ -69,7 +69,11 @@ def get_disk_info():
 
 def get_network_info():
     hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(hostname)
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    local_ip = s.getsockname()[0]
+    s.close()
 
     network_info = {
         "hostname": hostname,
@@ -78,11 +82,28 @@ def get_network_info():
 
     return network_info
 
+def get_uptime():
+    boot_time = psutil.boot_time()
+    current_time = time.time()
+
+    uptime = current_time - boot_time
+
+    return uptime
+
+def format_uptime(seconds):
+    days = int(seconds // (24 * 60 * 60))
+    hours = int((seconds % (24 * 60 * 60)) // (60 * 60))
+    minutes = int((seconds % (60 * 60)) // 60)
+    seconds = int(seconds % 60)
+
+    return f"{days}d {hours}h {minutes}m {seconds}s"
+
 sys_info = get_sys_info()
 cpu_info = get_cpu_info()
 memory_info = get_memory_info()
 disk_info = get_disk_info()
 network_info = get_network_info()
+uptime = get_uptime()
 
 
 print("SYSTEM INFORMATION")
@@ -119,3 +140,8 @@ print("NETWORK INFORMATION")
 print("-------------------")
 print(f"Hostname : {network_info['hostname']}")
 print(f"Local IP : {network_info['local_ip']}")
+
+print()
+print("UPTIME")
+print("------")
+print(f"Uptime : {format_uptime(uptime)}")
